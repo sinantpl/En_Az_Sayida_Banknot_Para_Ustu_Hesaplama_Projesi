@@ -1,0 +1,478 @@
+#include <SPI.h>        // Include SPI library (needed for the SD card)
+#include <SD.h>         // Include SD library
+typedef struct hizmet
+{
+  char * hizmet_ad;
+  int hizmet_id;
+  int hizmet_adet;
+  int hizmet_fiyat;
+}hizmet_a;
+
+typedef struct kasa
+{
+  int kasa_bes;
+  int kasa_on;
+  int kasa_yirmi;
+  int kasa_elli;
+  int kasa_yuz;
+}kasa_a;
+
+int led1 =8;
+int led2 =9;
+int s5=0; int s10=0; int s20=0; int s50=0; int s100=0;
+int sko=0; int sy=0; int sku=0; int sc=0;
+int syuz=0; int selli=0; int syirmi=0; int son=0; int sbes=0;
+int para=0; 
+int ilk_para=para;
+int i=0;
+int yuzlira,ellilira,yirmilira,onlira,beslira;
+
+int dizi_kasa[5]={20,20,10,30,5};
+char *dizi[4][4]={{"1","kopukleme","3","15 TL"},
+                  {"2","yikama","50","10 TL"},
+                  {"3","kurulama","100","5 TL"},
+                  {"4","cilalama","20","50 TL"}};
+    int ilk_bes=dizi_kasa[0];
+    int ilk_on=dizi_kasa[1];
+    int ilk_yirmi=dizi_kasa[2];
+    int ilk_elli=dizi_kasa[3];
+    int ilk_yuz=dizi_kasa[4];
+    int ilk_kopukleme=atoi(dizi[0][2]);
+    int ilk_yikama=atoi(dizi[1][2]);
+    int ilk_kurulama=atoi(dizi[2][2]);
+    int ilk_cilalama=atoi(dizi[3][2]);
+    File myFile;
+void setup() {
+
+  
+  // Open serial communications and wait for port to open:
+  pinMode(led1,OUTPUT);
+  pinMode(led2,OUTPUT);
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
+ 
+  Serial.print("Initializing SD card...");
+ 
+  if (!SD.begin()) {
+    Serial.println("initialization failed!");
+    while (1);
+  }
+  Serial.println("initialization done.");
+ 
+  // open the file. note that only one file can be open at a time,
+  // so you have to close this one before opening another.
+  // re-open the file for reading:
+  myFile = SD.open("hizmet.txt");
+  if (myFile) {
+    Serial.println("hizmet.txt:");
+ 
+    // read from the file until there's nothing else in it:
+    while (myFile.available()) {
+      Serial.write(myFile.read());
+      
+    }
+
+    myFile.close();
+ 
+    
+  } else {
+    // if the file didn't open, print an error:
+    Serial.println("error opening test.txt");
+  }
+
+
+  
+}
+ 
+void loop() {
+
+    
+    
+  
+    hizmet_a hizmet_dizisi[4];
+    hizmet_dizisi[0].hizmet_ad=dizi[0][1];
+    hizmet_dizisi[0].hizmet_id=atoi(dizi[0][0]);
+    hizmet_dizisi[0].hizmet_adet=atoi(dizi[0][2]);
+    hizmet_dizisi[0].hizmet_fiyat=atoi(dizi[0][3]);
+    hizmet_dizisi[1].hizmet_ad=dizi[1][1];
+    hizmet_dizisi[1].hizmet_id=atoi(dizi[1][0]);
+    hizmet_dizisi[1].hizmet_adet=atoi(dizi[1][2]);
+    hizmet_dizisi[1].hizmet_fiyat=atoi(dizi[1][3]);
+    hizmet_dizisi[2].hizmet_ad=dizi[2][1];
+    hizmet_dizisi[2].hizmet_id=atoi(dizi[2][0]);
+    hizmet_dizisi[2].hizmet_adet=atoi(dizi[2][2]);
+    hizmet_dizisi[2].hizmet_fiyat=atoi(dizi[2][3]);
+    hizmet_dizisi[3].hizmet_ad=dizi[3][1];
+    hizmet_dizisi[3].hizmet_id=atoi(dizi[3][0]);
+    hizmet_dizisi[3].hizmet_adet=atoi(dizi[3][2]);
+    hizmet_dizisi[3].hizmet_fiyat=atoi(dizi[3][3]);
+    kasa_a kasa_dizisi[1];
+    kasa_dizisi[0].kasa_bes=dizi_kasa[0];
+    kasa_dizisi[0].kasa_on=dizi_kasa[1];
+    kasa_dizisi[0].kasa_yirmi=dizi_kasa[2];
+    kasa_dizisi[0].kasa_elli=dizi_kasa[3];
+    kasa_dizisi[0].kasa_yuz=dizi_kasa[4];
+    
+    
+  int besbt =digitalRead(7);
+  int onbt =digitalRead(6);
+  int yirmibt =digitalRead(5);
+  int ellibt =digitalRead(4);
+  int yuzbt =digitalRead(3);
+  int bitisbt2 =digitalRead(2);
+  int kopukbt =digitalRead(A0);
+  int yikamabt =digitalRead(A1);
+  int kurubt =digitalRead(A2);
+  int cilabt =digitalRead(A3);
+  int bitisbt1 =digitalRead(A4);
+  int resetbt =digitalRead(A5);
+  
+if(besbt==HIGH || onbt==HIGH || yirmibt==HIGH || ellibt==HIGH || yuzbt==HIGH || bitisbt2==HIGH ) {
+  
+     if(besbt==HIGH){
+   delay(500);
+    s5++;
+    para=para+5;
+   
+  }
+  if(onbt==HIGH){
+    delay(500);
+    s10++;
+    para=para+10;
+     
+   
+  }
+  if(yirmibt==HIGH){
+    delay(500);
+    s20++;
+    para=para+20;
+    
+   
+  }
+  if(ellibt==HIGH){
+    delay(500);
+    s50++;
+    para=para+50;
+    
+   
+  }
+  if(yuzbt==HIGH){
+    delay(500);
+    s100++;
+    para=para+100;
+   
+  }
+  if(bitisbt2 == HIGH){
+    delay(500);
+    Serial.println();Serial.print("Toplam "); Serial.print(para); Serial.println(" TL para eklediniz!!!");
+  }
+ 
+  
+  }
+  if(kopukbt==HIGH || yikamabt==HIGH || kurubt==HIGH || cilabt==HIGH || bitisbt1==HIGH || resetbt== HIGH ){
+  
+     if(kopukbt==HIGH){
+   delay(500);
+   sko++;
+    para=para-hizmet_dizisi[0].hizmet_fiyat;
+    
+  }
+  if(yikamabt==HIGH){
+    delay(500);
+    sy++;
+    para=para-hizmet_dizisi[1].hizmet_fiyat;
+    
+  }
+  if(kurubt==HIGH){
+    delay(500);
+    sku++;
+    para=para-hizmet_dizisi[2].hizmet_fiyat;
+    
+  }
+  if(cilabt==HIGH){
+    delay(500);
+    sc++;
+    para=para-hizmet_dizisi[3].hizmet_fiyat;
+   
+  }
+  if(resetbt== HIGH){
+      delay(500);
+      sko=0; sy=0; sku=0; sc=0;
+      s5=0; s10=0; s20=0; s50=0; s100=0;
+      para=ilk_para;
+      dizi_kasa[0]=ilk_bes;
+      dizi_kasa[1]=ilk_on;
+      dizi_kasa[2]=ilk_yirmi;
+      dizi_kasa[3]=ilk_elli;
+      dizi_kasa[4]=ilk_yuz;
+      dizi[0][2]=itoa(ilk_kopukleme,dizi[0][2],10);
+      dizi[1][2]=itoa(ilk_yikama,dizi[1][2],10);
+      dizi[2][2]=itoa(ilk_kurulama,dizi[2][2],10);
+      dizi[3][2]=itoa(ilk_cilalama,dizi[3][2],10);
+      kasa_dizisi[0].kasa_bes=ilk_bes;
+      kasa_dizisi[0].kasa_on=ilk_on;
+      kasa_dizisi[0].kasa_yirmi=ilk_yirmi;
+      kasa_dizisi[0].kasa_elli=ilk_elli;
+      kasa_dizisi[0].kasa_yuz=ilk_yuz;
+      hizmet_dizisi[0].hizmet_adet=ilk_kopukleme;
+      hizmet_dizisi[1].hizmet_adet=ilk_yikama;
+      hizmet_dizisi[2].hizmet_adet=ilk_kurulama;
+      hizmet_dizisi[3].hizmet_adet=ilk_cilalama;
+      Serial.println("Islemler Iptal Edilmistir!!!");
+      Serial.println("Tekrardan Secim Yapiniz!!!");
+    }
+  if(bitisbt1 == HIGH){
+    
+    
+    delay(500);
+    if(para<0){
+      Serial.println("Yetersiz Bakiye!!!");
+    }else{
+    Serial.println();Serial.print("Para ustu: "); Serial.print(para);Serial.println(" TL");
+    }
+    int para_ustu = para;
+    int randomsayi=rand()%4+1;
+    
+    
+    if(randomsayi==2){
+      
+      digitalWrite(led1,LOW);
+      
+      digitalWrite(led2,HIGH);
+      
+      Serial.println("PARA SIKISMISTIR!!! PARANIZ IADE EDILIYOR...");
+      
+    para=ilk_para;
+    sko=0; sy=0; sku=0; sc=0;
+    s5=0; s10=0; s20=0; s50=0; s100=0;
+    dizi_kasa[0]=ilk_bes;
+    dizi_kasa[1]=ilk_on;
+    dizi_kasa[2]=ilk_yirmi;
+    dizi_kasa[3]=ilk_elli;
+    dizi_kasa[4]=ilk_yuz;
+    dizi[0][2]=itoa(ilk_kopukleme,dizi[0][2],10);
+    dizi[1][2]=itoa(ilk_yikama,dizi[1][2],10);
+    dizi[2][2]=itoa(ilk_kurulama,dizi[2][2],10);
+    dizi[3][2]=itoa(ilk_cilalama,dizi[3][2],10);
+    kasa_dizisi[0].kasa_bes=ilk_bes;
+    kasa_dizisi[0].kasa_on=ilk_on;
+    kasa_dizisi[0].kasa_yirmi=ilk_yirmi;
+    kasa_dizisi[0].kasa_elli=ilk_elli;
+    kasa_dizisi[0].kasa_yuz=ilk_yuz;
+    hizmet_dizisi[0].hizmet_adet=ilk_kopukleme;
+    hizmet_dizisi[1].hizmet_adet=ilk_yikama;
+    hizmet_dizisi[2].hizmet_adet=ilk_kurulama;
+    hizmet_dizisi[3].hizmet_adet=ilk_cilalama;
+    Serial.println("Islemler Iptal Edilmistir!!!");
+    
+    for(int x=0;x<5;x++){
+          Serial.print(dizi_kasa[x]);
+          if(x<4){
+            Serial.print(",");
+          }
+    }
+    
+    
+    for(int i=0;i<4;i++){
+      Serial.println();
+      for(int j=0;j<4;j++){
+        Serial.print(dizi[i][j]);              
+          if(j<3){
+           Serial.print(","); 
+          } 
+      }
+      
+    }
+    Serial.println();
+    Serial.println("RESET BUTONUNA BASINIZ!!!");
+    }
+    else{
+    
+    digitalWrite(led1,HIGH);
+    
+    digitalWrite(led2,LOW);
+    delay(500);
+
+    if( para_ustu < 0){
+      Serial.println("Lutfen Reset Butonuna Basiniz!!!");
+      para=ilk_para;
+    sko=0; sy=0; sku=0; sc=0;
+    s5=0; s10=0; s20=0; s50=0; s100=0;
+    dizi_kasa[0]=ilk_bes;
+    dizi_kasa[1]=ilk_on;
+    dizi_kasa[2]=ilk_yirmi;
+    dizi_kasa[3]=ilk_elli;
+    dizi_kasa[4]=ilk_yuz;
+    dizi[0][2]=itoa(ilk_kopukleme,dizi[0][2],10);
+    dizi[1][2]=itoa(ilk_yikama,dizi[1][2],10);
+    dizi[2][2]=itoa(ilk_kurulama,dizi[2][2],10);
+    dizi[3][2]=itoa(ilk_cilalama,dizi[3][2],10);
+    kasa_dizisi[0].kasa_bes=ilk_bes;
+    kasa_dizisi[0].kasa_on=ilk_on;
+    kasa_dizisi[0].kasa_yirmi=ilk_yirmi;
+    kasa_dizisi[0].kasa_elli=ilk_elli;
+    kasa_dizisi[0].kasa_yuz=ilk_yuz;
+    hizmet_dizisi[0].hizmet_adet=ilk_kopukleme;
+    hizmet_dizisi[1].hizmet_adet=ilk_yikama;
+    hizmet_dizisi[2].hizmet_adet=ilk_kurulama;
+    hizmet_dizisi[3].hizmet_adet=ilk_cilalama;
+    }
+    else{
+    syuz = dizi_kasa[4] + s100;
+    selli = dizi_kasa[3] + s50;
+    syirmi = dizi_kasa[2] + s20;
+    son = dizi_kasa[1] + s10;
+    sbes = dizi_kasa[0] + s5;
+   
+    if(para>=100 ){
+      yuzlira = para/100;
+      if(yuzlira>syuz){
+        yuzlira=syuz;
+        para-=yuzlira*100;
+      }else
+      para-=yuzlira*100;
+    }
+      if(para>=50 ){
+      ellilira = para/50;
+      if(ellilira>selli){
+        ellilira=selli;
+        para-=ellilira*50;
+      }else
+      para-=ellilira*50;
+    }
+     if(para>=20 ){
+      yirmilira = para/20;
+      if(yirmilira>syirmi){
+        yirmilira=syirmi;
+        para-=yirmilira*20;
+      }else
+      para-=yirmilira*20;
+    }
+     if(para>=10 ){
+      onlira = para/10;
+      if(onlira>son){
+        onlira=son;
+        para-=onlira*10;
+      }else
+      para-=onlira*10;
+    }
+     if(para>=5 ){
+      beslira = para/5;
+      if(beslira>sbes){
+        beslira=sbes;
+        para-=beslira*5;
+      }
+      else
+      para-=beslira*5;
+    }
+     
+
+    
+    
+    
+   if(hizmet_dizisi[0].hizmet_adet-sko < 0 || hizmet_dizisi[1].hizmet_adet-sy < 0 || hizmet_dizisi[2].hizmet_adet-sku < 0 || hizmet_dizisi[3].hizmet_adet-sc < 0){
+   hizmet_dizisi[0].hizmet_adet = hizmet_dizisi[0].hizmet_adet - sko;
+   if(hizmet_dizisi[0].hizmet_adet < 0){
+    Serial.println("Secilen Kopukleme Islemi Malzeme Eksikliginden Dolayi Yapilamamaktadir...");
+    Serial.println("Lutfen Reset Butonuna Basiniz!!!");
+    dizi_kasa[0]=ilk_bes;
+    dizi_kasa[1]=ilk_on;
+    dizi_kasa[2]=ilk_yirmi;
+    dizi_kasa[3]=ilk_elli;
+    dizi_kasa[4]=ilk_yuz;
+   }else{
+   dizi[0][2] = itoa(hizmet_dizisi[0].hizmet_adet,dizi[0][2],10);
+   }
+   hizmet_dizisi[1].hizmet_adet = hizmet_dizisi[1].hizmet_adet - sy;
+    if(hizmet_dizisi[1].hizmet_adet < 0){
+    Serial.println(F("Secilen Yikama Islemi Malzeme Eksikliginden Dolayi Yapilamamaktadir..."));
+    Serial.println(F("Lutfen Reset Butonuna Basiniz!!!"));
+    dizi_kasa[0]=ilk_bes;
+    dizi_kasa[1]=ilk_on;
+    dizi_kasa[2]=ilk_yirmi;
+    dizi_kasa[3]=ilk_elli;
+    dizi_kasa[4]=ilk_yuz;
+   }else{
+   dizi[1][2] = itoa(hizmet_dizisi[1].hizmet_adet,dizi[1][2],10);
+   }
+   hizmet_dizisi[2].hizmet_adet = hizmet_dizisi[2].hizmet_adet - sku;
+    if(hizmet_dizisi[2].hizmet_adet < 0){
+    Serial.println(F("Secilen Kurulama Islemi Malzeme Eksikliginden Dolayi Yapilamamaktadir..."));
+    Serial.println(F("Lutfen Reset Butonuna Basiniz!!!"));
+    dizi_kasa[0]=ilk_bes;
+    dizi_kasa[1]=ilk_on;
+    dizi_kasa[2]=ilk_yirmi;
+    dizi_kasa[3]=ilk_elli;
+    dizi_kasa[4]=ilk_yuz;
+   }else{
+   dizi[2][2] = itoa(hizmet_dizisi[2].hizmet_adet,dizi[2][2],10);
+   }
+   hizmet_dizisi[3].hizmet_adet = hizmet_dizisi[3].hizmet_adet - sc;
+    if(hizmet_dizisi[3].hizmet_adet < 0){
+    Serial.println(F("Secilen Cilalama Islemi Malzeme Eksikliginden Dolayi Yapilamamaktadir..."));
+    Serial.println(F("Lutfen Reset Butonuna Basiniz!!!"));
+    dizi_kasa[0]=ilk_bes;
+    dizi_kasa[1]=ilk_on;
+    dizi_kasa[2]=ilk_yirmi;
+    dizi_kasa[3]=ilk_elli;
+    dizi_kasa[4]=ilk_yuz;
+   }else{
+    
+   dizi[3][2] = itoa(hizmet_dizisi[3].hizmet_adet,dizi[3][2],10);
+   
+   }}else{
+    
+    dizi[0][2] = itoa(hizmet_dizisi[0].hizmet_adet-sko,dizi[0][2],10);
+    dizi[1][2] = itoa(hizmet_dizisi[1].hizmet_adet-sy,dizi[1][2],10);
+    dizi[2][2] = itoa(hizmet_dizisi[2].hizmet_adet-sku,dizi[2][2],10);
+    dizi[3][2] = itoa(hizmet_dizisi[3].hizmet_adet-sc,dizi[3][2],10);
+    
+    kasa_dizisi[0].kasa_bes = kasa_dizisi[0].kasa_bes + s5 - beslira;
+    dizi_kasa[0] = kasa_dizisi[0].kasa_bes;
+    
+    kasa_dizisi[0].kasa_on = kasa_dizisi[0].kasa_on + s10 - onlira;
+    dizi_kasa[1] = kasa_dizisi[0].kasa_on;
+        
+    kasa_dizisi[0].kasa_yirmi = kasa_dizisi[0].kasa_yirmi + s20 - yirmilira;
+    dizi_kasa[2] = kasa_dizisi[0].kasa_yirmi;
+     
+    kasa_dizisi[0].kasa_elli = kasa_dizisi[0].kasa_elli + s50 - ellilira;
+    dizi_kasa[3] = kasa_dizisi[0].kasa_elli;
+      
+    kasa_dizisi[0].kasa_yuz = kasa_dizisi[0].kasa_yuz + s100 - yuzlira;
+    dizi_kasa[4] = kasa_dizisi[0].kasa_yuz;
+    Serial.print("100TL: ");Serial.println(yuzlira); Serial.print("50TL: ");Serial.println(ellilira); Serial.print("20TL: ");Serial.println(yirmilira); 
+    Serial.print("10TL: ");Serial.println(onlira); Serial.print("5TL: ");Serial.println(beslira);
+   }
+    
+    
+   if(para_ustu > (beslira*5) + (onlira*10) + (yirmilira*20) + (ellilira*50) + (yuzlira*100)){
+      Serial.println(F("Kasada Yeterli Para Yoktur..."));
+    }
+    }
+    for(int x=0;x<5;x++){
+          Serial.print(dizi_kasa[x]);
+          if(x<4){
+            Serial.print(",");
+          }
+    }
+    
+    
+    for(int i=0;i<4;i++){
+      Serial.println();
+      for(int j=0;j<4;j++){
+        Serial.print(dizi[i][j]);              
+          if(j<3){
+           Serial.print(","); 
+          } 
+      }
+      
+    }
+    Serial.println();
+  }}
+  
+  }
+   
+}
